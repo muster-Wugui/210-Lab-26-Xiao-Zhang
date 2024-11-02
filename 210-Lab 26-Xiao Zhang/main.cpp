@@ -1,3 +1,4 @@
+// COMSC-210 | Lab 26 | Xiao Zhang
 #include <iostream>
 #include <chrono>
 #include <fstream>
@@ -14,23 +15,24 @@ vector<string> ve;
 list<string> li;
 set<string> se;
 
-int durations[4][3][15] = {0};
+int durations[4][3][15] = {0}; //This is a array for storing the time of each race
 
-void read(string name, int turn);
-void sorting(int turn);
-void insert(int turn);
-void del(int turn);
-void printavg();
+void read(string name, int turn); //Read the data from file
+void sorting(int turn); //Sort the data in the container
+void insert(int turn); //insert an element
+void del(int turn); //delete an element
+void printavg(); //print out the average time for each container
 
 int main() {
     string name = "codes.txt";
     
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 15; i++) { //run 15 simulations as required
         read(name, i);
         sorting(i);
         insert(i);
         del(i);
 
+        //we have to clear the container for the next round
         ve.clear();
         li.clear();
         se.clear();
@@ -83,66 +85,100 @@ void read(string name, int turn) {
     file.close();
 }
 
-void sorting() {
+void sorting(int turn) {
     auto start_ve = high_resolution_clock::now();
+    
     sort(ve.begin(), ve.end());
+    
     auto end_ve = high_resolution_clock::now();
-    auto duration_ve = duration_cast<milliseconds>(end_ve - start_ve);
+    
+    durations[1][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count();
     
     auto start_li = high_resolution_clock::now();
     li.sort();
     auto end_li = high_resolution_clock::now();
-    auto duration_li = duration_cast<milliseconds>(end_li - start_li);
+    durations[1][1][turn] = duration_cast<milliseconds>(end_li - start_li).count();
     
-    int duration_se = -1;
-    
-    cout << "Sort\t" << duration_ve.count() << "\t" << duration_li.count() << "\t" << duration_se << endl;
+    durations[1][2][turn] = -1; // there's no sorting needed for set, so set the value to -1
 }
 
-void insert() {
+void insert(int turn) {
     string code = "TESTCODE";
     
     auto start_ve = high_resolution_clock::now();
-    long middle = ve.size() / 2;
-    ve.insert(ve.begin() + middle, code);
+    
+    ve.insert(ve.begin() + ve.size() / 2, code);
+    
     auto end_ve = high_resolution_clock::now();
-    auto duration_ve = duration_cast<milliseconds>(end_ve - start_ve);
+    
+    durations[2][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count();
     
     auto start_li = high_resolution_clock::now();
+    
     auto it = li.begin();
     advance(it, li.size() / 2);
     li.insert(it, code);
     auto end_li = high_resolution_clock::now();
-    auto duration_li = duration_cast<milliseconds>(end_li - start_li);
+    
+    durations[2][1][turn] = duration_cast<milliseconds>(end_li - start_li).count();
     
     auto start_se = high_resolution_clock::now();
     se.insert(code);
     auto end_se = high_resolution_clock::now();
-    auto duration_se = duration_cast<milliseconds>(end_se - start_se);
     
-    cout << "Insert\t" << duration_ve.count() << "\t" << duration_li.count() << "\t" << duration_se.count() << endl;
+    durations[2][2][turn] = duration_cast<milliseconds>(end_se - start_se).count();
 }
 
-void del() {
+void del(int turn) {
     auto start_ve = high_resolution_clock::now();
-    long middle = ve.size() / 2;
-    ve.erase(ve.begin() + middle);
+    ve.erase(ve.begin() + ve.size() / 2);
     auto end_ve = high_resolution_clock::now();
-    auto duration_ve = duration_cast<milliseconds>(end_ve - start_ve);
+    
+    durations[3][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count();
     
     auto start_li = high_resolution_clock::now();
     auto it = li.begin();
     advance(it, li.size() / 2);
     li.erase(it);
     auto end_li = high_resolution_clock::now();
-    auto duration_li = duration_cast<milliseconds>(end_li - start_li);
+    
+    durations[3][1][turn] = duration_cast<milliseconds>(end_li - start_li).count();
     
     auto start_se = high_resolution_clock::now();
     auto it_se = se.begin();
+    
     advance(it_se, se.size() / 2);
     se.erase(it_se);
     auto end_se = high_resolution_clock::now();
-    auto duration_se = duration_cast<milliseconds>(end_se - start_se);
     
-    cout << "Delete\t" << duration_ve.count() << "\t" << duration_li.count() << "\t" << duration_se.count() << endl;
+    durations[3][2][turn] = duration_cast<milliseconds>(end_se - start_se).count();
+}
+
+void printavg() {
+    cout << "Number of simulations: 15"<< endl;
+    cout << "Operation\tVector\tList\tSet" << endl;
+
+    string operations[4] = {"Read", "Sort", "Insert", "Delete"};
+    
+    for (int i = 0; i < 4; i++) {
+        cout << operations[i] << "\t";
+        
+        for (int type = 0; type < 3; type++) {
+            int total = 0;
+            for (int turn = 0; turn < 15; turn++) {
+                total += durations[i][type][turn];
+            }
+            int average;
+            
+            if (type == 2 && i == 1) {
+                average = 0;
+            }
+            else {
+                average = total / 15;
+            }
+
+            cout << average << "\t";
+        }
+        cout << endl;
+    }
 }

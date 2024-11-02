@@ -55,7 +55,7 @@ void read(string name, int turn) {
     
     auto end_ve = high_resolution_clock::now();
     
-    durations[0][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count();
+    durations[0][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count(); //put the time in the first column for the container vector
     
     file.close();
     
@@ -68,7 +68,7 @@ void read(string name, int turn) {
     
     auto end_li = high_resolution_clock::now();
     
-    durations[0][1][turn] = duration_cast<milliseconds>(end_li - start_li).count();
+    durations[0][1][turn] = duration_cast<milliseconds>(end_li - start_li).count(); //put the time in the second column for the container list
     
     file.close();
     
@@ -81,7 +81,7 @@ void read(string name, int turn) {
     
     auto end_se = high_resolution_clock::now();
     
-    durations[0][2][turn] = duration_cast<milliseconds>(end_se - start_se).count();
+    durations[0][2][turn] = duration_cast<milliseconds>(end_se - start_se).count(); //put the time in the third column for the container set
     file.close();
 }
 
@@ -107,7 +107,7 @@ void insert(int turn) {
     
     auto start_ve = high_resolution_clock::now();
     
-    ve.insert(ve.begin() + ve.size() / 2, code);
+    ve.insert(ve.begin() + ve.size() / 2, code); //insert in the middle, same for the list as shown in line 119
     
     auto end_ve = high_resolution_clock::now();
     
@@ -123,7 +123,7 @@ void insert(int turn) {
     durations[2][1][turn] = duration_cast<milliseconds>(end_li - start_li).count();
     
     auto start_se = high_resolution_clock::now();
-    se.insert(code);
+    se.insert(code); //insert into set with no specific position
     auto end_se = high_resolution_clock::now();
     
     durations[2][2][turn] = duration_cast<milliseconds>(end_se - start_se).count();
@@ -131,7 +131,7 @@ void insert(int turn) {
 
 void del(int turn) {
     auto start_ve = high_resolution_clock::now();
-    ve.erase(ve.begin() + ve.size() / 2);
+    ve.erase(ve.begin() + ve.size() / 2);  //delete the element in the middle, same for the list as shown in line 141
     auto end_ve = high_resolution_clock::now();
     
     durations[3][0][turn] = duration_cast<milliseconds>(end_ve - start_ve).count();
@@ -148,13 +148,13 @@ void del(int turn) {
     auto it_se = se.begin();
     
     advance(it_se, se.size() / 2);
-    se.erase(it_se);
+    se.erase(it_se); //delete the element in set with no specific position
     auto end_se = high_resolution_clock::now();
     
     durations[3][2][turn] = duration_cast<milliseconds>(end_se - start_se).count();
 }
 
-void printavg() {
+void printavg() { // Calculate and print average times for each operation and container
     cout << "Number of simulations: 15"<< endl;
     cout << "Operation\tVector\tList\tSet" << endl;
 
@@ -169,7 +169,7 @@ void printavg() {
                 total += durations[i][type][turn];
             }
             int average;
-            
+            // Set average time (0 for sorting in set)
             if (type == 2 && i == 1) {
                 average = 0;
             }
